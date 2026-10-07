@@ -1,0 +1,14 @@
+{% extends "social/base.html" %}
+{% block title %}Register | SocialApp{% endblock %}
+{% block content %}
+<div class="auth-card">
+    <h1>Create Account</h1>
+    <p class="muted">Join SocialApp today.</p>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button class="primary full" type="submit">Create Account</button>
+    </form>
+    <p class="center">Already have an account? <a href="{% url 'login' %}">Login</a></p>
+</div>
+{% endblock %}

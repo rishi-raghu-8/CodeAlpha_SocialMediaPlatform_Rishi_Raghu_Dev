@@ -1,0 +1,13 @@
+{% extends "social/base.html" %}
+{% block title %}Edit Post | SocialApp{% endblock %}
+{% block content %}
+<div class="form-card card">
+    <h1>Edit Post</h1>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button class="primary" type="submit">Update Post</button>
+        <a class="secondary" href="{% url 'home' %}">Cancel</a>
+    </form>
+</div>
+{% endblock %}

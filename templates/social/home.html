@@ -1,0 +1,98 @@
+{% extends "social/base.html" %}
+{% block title %}Home | SocialApp{% endblock %}
+{% block content %}
+<div class="layout">
+    <section>
+        <div class="card composer">
+            <h2>Create a Post</h2>
+            <form method="post" action="{% url 'create_post' %}" enctype="multipart/form-data">
+                {% csrf_token %}
+                {{ post_form.content }}
+                {{ post_form.image }}
+                <button class="primary" type="submit">Publish</button>
+            </form>
+        </div>
+
+        {% for post in posts %}
+        <article class="card post">
+            <div class="post-header">
+                <div class="avatar">{{ post.author.username|first|upper }}</div>
+                <div>
+                    <a class="username" href="{% url 'profile' post.author.username %}">
+                        @{{ post.author.username }}
+                    </a>
+                    <div class="muted small">{{ post.created_at|timesince }} ago</div>
+                </div>
+                {% if post.author == user %}
+                <div class="post-menu">
+                    <a href="{% url 'edit_post' post.id %}">Edit</a>
+                    <form method="post" action="{% url 'delete_post' post.id %}" class="inline-form"
+                          onsubmit="return confirm('Delete this post?');">
+                        {% csrf_token %}
+                        <button class="danger-link" type="submit">Delete</button>
+                    </form>
+                </div>
+                {% endif %}
+            </div>
+
+            <p class="post-content">{{ post.content|linebreaksbr }}</p>
+
+            {% if post.image %}
+                <img class="post-image" src="{{ post.image.url }}" alt="Post image">
+            {% endif %}
+
+            <div class="stats">
+                <span>{{ post.like_count }} likes</span>
+                <span>{{ post.comment_count }} comments</span>
+            </div>
+
+            <div class="actions">
+                <form method="post" action="{% url 'toggle_like' post.id %}">
+                    {% csrf_token %}
+                    <button class="action-btn {% if post.id in liked_ids %}liked{% endif %}" type="submit">
+                        {% if post.id in liked_ids %}♥ Liked{% else %}♡ Like{% endif %}
+                    </button>
+                </form>
+            </div>
+
+            <div class="comments">
+                {% for comment in post.comments.all %}
+                    <div class="comment">
+                        <strong>@{{ comment.author.username }}</strong>
+                        <span>{{ comment.content }}</span>
+                        {% if comment.author == user %}
+                        <form method="post" action="{% url 'delete_comment' comment.id %}" class="inline-form">
+                            {% csrf_token %}
+                            <button class="delete-comment" type="submit">×</button>
+                        </form>
+                        {% endif %}
+                    </div>
+                {% empty %}
+                    <p class="muted small">No comments yet.</p>
+                {% endfor %}
+
+                <form method="post" action="{% url 'add_comment' post.id %}" class="comment-form">
+                    {% csrf_token %}
+                    <input type="text" name="content" placeholder="Write a comment..." required>
+                    <button type="submit">Post</button>
+                </form>
+            </div>
+        </article>
+        {% empty %}
+            <div class="card empty">
+                <h2>No posts yet</h2>
+                <p>Follow people or create your first post.</p>
+            </div>
+        {% endfor %}
+    </section>
+
+    <aside>
+        <div class="card side-card">
+            <div class="avatar large">{{ user.username|first|upper }}</div>
+            <h2>@{{ user.username }}</h2>
+            <p class="muted">{{ user.profile.bio|default:"Welcome to SocialApp!" }}</p>
+            <a class="secondary full-btn" href="{% url 'profile' user.username %}">View Profile</a>
+        </div>
+    </aside>
+</div>
+{% endblock %}

@@ -1,0 +1,18 @@
+{% extends "social/base.html" %}
+{% block title %}Login | SocialApp{% endblock %}
+{% block content %}
+<div class="auth-card">
+    <h1>Welcome Back</h1>
+    <p class="muted">Login to continue.</p>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+        <label>Username</label>
+        {{ form.username }}
+        <label>Password</label>
+        {{ form.password }}
+        <button class="primary full" type="submit">Login</button>
+    </form>
+    <p class="center">Don't have an account? <a href="{% url 'register' %}">Register</a></p>
+</div>
+{% endblock %}
